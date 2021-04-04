@@ -1,0 +1,64 @@
+<? require "layout.php"; ?>
+<head>
+	<? require "head.phtml"; ?>
+	<? if($repo->visibility->value == 'unlisted'): ?>
+	<meta name="robots" content="noindex">
+	<? endif ?>
+<!--
+{# Man, this is lame #}
+You're right, this is lame, not gonna do go stuff for now
+<meta name="go-import"
+  content="{{domain}}/{{owner.canonical_name}}/{{repo.name}} git {{(repo | clone_urls)[0]}}">
+{% if default_branch %}
+  {% set default_branch_name = default_branch.raw_name.decode("utf-8", "replace")[len("refs/heads/"):] %}
+  <meta name="go-source"
+    content="{{domain}}/{{owner.canonical_name}}/{{repo.name}} {{(repo | clone_urls)[0]}}
+             {{(repo | clone_urls)[0]}}/tree/
+               {{- default_branch_name}}{/dir}
+             {{(repo | clone_urls)[0]}}/tree/
+               {{- default_branch_name}}{/dir}/{file}#L{line}">
+{% endif %}
+-->
+</head>
+<body>
+<div class="header-tabbed">
+	<? if($view == "blob"): ?>
+	<div class="container-fluid">
+	<? else: ?>
+	<div class="container">
+	<? endif; ?>
+		<? $link = function ($title, $alternates=[]) use ($view, $repo) { ?>
+			<a
+				class="nav-link <? if($view == $title or in_array($view, $alternates)): ?>active<? endif; ?>"
+				href="<?=$repo->url() . "/" . $title?>"><?=$title?></a>
+		<? } ?>
+		<h2>
+			<a href="<?= url_for("public.user_index", username: $owner->username) ?>"
+			><?=$owner->canonical_name?></a>/<wbr><?=$repo->name?>
+			<? if($repo->visibility->value != 'public'): ?>
+			<small class="text-muted"><?=$repo->visibility->value?></small>
+			<? endif; ?>
+		</h2>
+		<ul class="nav nav-tabs">
+			<li class="nav-item">
+				<?=$link("summary")?>
+			</li>
+			<li class="nav-item">
+				<?=$link("tree", ["blob"])?>
+			</li>
+			<li class="nav-item">
+				<?=$link("log")?>
+			</li>
+			<li class="nav-item">
+				<?=$link("refs")?>
+			</li>
+			<? if($current_user->id == $repo->owner_id): ?>
+			<li class="nav-item">
+				<?=$link("settings")?>
+			</li>
+			<? endif; ?>
+
+			<?= function_exists("tabs_extra") ? tabs_extra() : ""?>
+		</ul>
+	</div> <!-- container -->
+</div> <!-- header-tabbed -->

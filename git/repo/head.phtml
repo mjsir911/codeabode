@@ -1,0 +1,16 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title><?= isset($title) ? $title : $domain ?></title>
+<link rel="icon" type="image/png" href="data:image/png;base64,<?=base64_encode(readfile("favicon.png", true))?>" />
+<? if($app->debug): ?>
+	<link rel="stylesheet" href="/static/main.css">
+<? else: ?>
+	<link rel="stylesheet" href="/<?= static_resource("static/main.min.css")?>">
+<? endif; ?>
+<? if($page and $page != 1): ?>
+	<link rel="prev" href="?page=<?= $page - 1 ?><?= coalesce_search_terms() ?>" />
+<? endif; ?>
+<? if($page and $page != total_pages): ?>
+	<link rel="next" href="?page=<?= $page + 1 ?><?= coalesce_search_terms() ?>" />
+<? endif; ?>

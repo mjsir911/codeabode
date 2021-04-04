@@ -1,0 +1,53 @@
+<?php $title = "{$repo->owner->canonical_name}/{$repo->name}: {$path} {$ref} - " . cfg("sr.ht", "site-name");
+?>
+<? if ($path): function tabs_extra() { global $ref;?>
+	<li class="flex-grow-1 d-none d-sm-block"></li>
+	<li class="nav-item d-none d-sm-block">
+		<a class="nav-link active" href="{{ repo|log_rss_url(ref=ref) }}">
+		<?=icon('rss', cls: 'sm')?> RSS
+		</a>
+	</li>
+<? } endif ?>
+<? require "repo.phtml" ?>
+<? require "utils.php"; ?>
+<? if($path): ?>
+<div class="header-extension">
+	<div class="container">
+		<span style="padding-left: 1rem">
+			{{ utils.breadcrumb(ref, repo, path, entry, view, path_join, stat, pygit2, humanize) }}
+		</span>
+		<div class="clearfix"></div>
+	</div>
+</div>
+<? endif; ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="event-list">
+				<? foreach($commits as $oid): $commit=new Commit($repo->repo, $oid);?>
+				<div class="event">
+					<!-- {{ utils.commit_event(repo, c, True, refs, path=full_path) }} -->
+					<?= \utils\commit_event($repo, $commit, true) ?>
+				</div>
+				<? endforeach; ?>
+				<? if (!isset($oid)): ?>
+				<div class="event">
+					No commits<?if ($path):?> for this path<?endif;?>
+				</div>
+				<? endif; ?>
+			</div>
+			<?=$commits->getInnerIterator->valid()?>
+			{% if commits and commits[-1].parents %}
+			<a
+				class="pull-right btn btn-primary"
+				href="{{url_for("repo.log",
+					owner=owner.canonical_name,
+					repo=repo.name,
+					ref=ref,
+					path=full_path,
+				)}}?from={{commits[-1].id}}"
+			>Next {{icon("caret-right")}}</a>
+			{% endif %}
+		</div>
+</div>
+</head>
